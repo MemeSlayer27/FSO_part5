@@ -14,12 +14,18 @@ const Blog = ({ blog, deletePost, likePost = null, showRemove = false }) => {
   const [showMore, setShowMore] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
 
-  const likeHandler = likePost ? likePost : async () => {
+  const likeHandler = async () => {
+
+
     try {
-      await blogService.likePost(blog)
+      await blogService.likeBlog(blog)
       setLikes(likes + 1)
     } catch (e) {
       console.log(e)
+    }
+
+    if (likePost) {
+      likePost()
     }
   }
 
@@ -38,7 +44,7 @@ const Blog = ({ blog, deletePost, likePost = null, showRemove = false }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       {blog.title} by {blog.author} <button onClick={() => setShowMore(!showMore)}>view</button>
     </div>
   )

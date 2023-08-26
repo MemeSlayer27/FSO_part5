@@ -90,7 +90,7 @@ const App = () => {
 
     setTimeout(() => {
       setMessage(null)
-    }, 3000)
+    }, 1000)
   }
 
   const displayError = (message) => {
@@ -107,11 +107,23 @@ const App = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.deleteBlog(blog)
 
-      const index = blogs.indexOf(blog)
-      blogs.splice(index, 1)
 
-      setBlogs(blogs)
+      const updatedblogs = blogs.filter( b => b !== blog)
+
+      setBlogs(updatedblogs)
     }
+
+  }
+
+
+  const likePost = (blog) => {
+    const updated = blogs
+
+    const index = updated.indexOf(blog)
+
+    updated[index] = { ...blog, likes: blog + 1 }
+
+    setBlogs(updated)
 
   }
 
@@ -136,8 +148,8 @@ const App = () => {
       <Error errorMessage={error} />
       <div>{user.name} logged in <LogOutButton onLogOut={onLogOut}/></div>
       <NewBlogCreation afterPost={addPost} show={showForm} toggleShow={toggleShowForm} />
-      {blogs.sort( (a,b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} deletePost={() => deletePost(blog)} showRemove={user.name === blog.user.name}/>
+      {blogs.sort( (a,b) => b.likes - a.likes).map(blog =>                  // likepost handler needs to change the likes here as well
+        <Blog className='blog' key={blog.id} blog={blog} deletePost={() => deletePost(blog)} likePost={() => likePost(blog)} showRemove={user.username === blog.user.username}/>
       )}
     </div>
   )

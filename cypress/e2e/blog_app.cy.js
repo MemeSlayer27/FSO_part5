@@ -1,13 +1,13 @@
 describe('Blog app', function() {
-  beforeEach(async function() {
-    await cy.request('POST', 'http://localhost:3003/api/testing/reset')
+  beforeEach( function() {
+    cy.request('POST', 'http://localhost:3003/api/testing/reset')
     cy.visit('http://localhost:5173')
   })
 
   it('Login form is shown', function() {
     cy.contains('username').should('exist')
     cy.contains('password').should('exist')
-    cy.contains('log in').should('exist')
+    cy.contains('login').should('exist')
   })
 
   describe('Login',function() {
@@ -26,7 +26,7 @@ describe('Blog app', function() {
 
       cy.get('input:first').type('kayttaja')
       cy.get('input:last').type('silisini')
-      cy.contains('log in').click()
+      cy.contains('login').click()
 
       cy.contains('blogs')
 
@@ -48,9 +48,9 @@ describe('Blog app', function() {
 
       cy.get('input:first').type('kayttaja')
       cy.get('input:last').type('silisana')
-      cy.contains('log in').click()
+      cy.contains('login').click()
 
-      cy.contains('log in to application')
+      cy.contains('login to application')
 
 
     })
@@ -58,14 +58,14 @@ describe('Blog app', function() {
 
 
   describe('When logged in', function() {
-    beforeEach(async function() {
+    beforeEach( function() {
       const user = {
         name: 'Matti',
         username: 'kayttaja',
         password: 'silisini'
       }
 
-      await cy.request({
+      cy.request({
         method: 'POST',
         url: 'http://localhost:3003/api/users',
         body: user
@@ -73,7 +73,7 @@ describe('Blog app', function() {
 
       cy.get('input:first').type('kayttaja')
       cy.get('input:last').type('silisini')
-      cy.contains('log in').click()
+      cy.contains('login').click()
 
       cy.contains('blogs')
 
@@ -84,7 +84,7 @@ describe('Blog app', function() {
 
 
       cy.get('input:first').type('jtnjtn')
-      cy.get('input:second').type('jokujoku.net')
+      cy.get(':nth-child(2) > input').type('jokujoku.net')
       cy.get('input:last').type('Matti')
       cy.contains('create').click()
 
@@ -103,10 +103,10 @@ describe('Blog app', function() {
 
       cy.contains('view').click()
 
-      cy.contains('likes: 0')
+      cy.contains('likes 0')
       cy.contains('like').click()
 
-      cy.contains('likes: 1').should('exist')
+      cy.contains('likes 1').should('exist')
 
     })
 
@@ -114,7 +114,7 @@ describe('Blog app', function() {
       cy.contains('new blog').click()
 
       cy.get('input:first').type('jtnjtn')
-      cy.get('input:second').type('jokujoku.net')
+      cy.get(':nth-child(2) > input').type('jokujoku.net')
       cy.get('input:last').type('Matti')
       cy.contains('create').click()
 
@@ -126,7 +126,7 @@ describe('Blog app', function() {
 
     })
 
-    it('only creator can see remove button', async function() {
+    it('only creator can see remove button', function() {
       cy.contains('new blog').click()
 
       cy.get('input:first').type('jtnjtn')
@@ -135,20 +135,27 @@ describe('Blog app', function() {
       cy.contains('create').click()
 
 
-      await cy.request('POST', 'http://localhost:3003/api/users', {
+      cy.request('POST', 'http://localhost:3003/api/users', {
         name: 'Miikka', username: 'mluukkai', password: 'salainen'
       })
 
-      const response = await cy.request('POST', 'http://localhost:3003/api/login', {
+      cy.request('POST', 'http://localhost:3003/api/login', {
         username: 'mluukkai', password: 'salainen'
+      }).then(response => {
+
+        cy.visit('http://localhost:5173')
+
+        cy.get('input:first').type('mluukkai')
+        cy.get('input:last').type('salainen')
+        cy.contains('login').click()
+
+        cy.contains('blogs')
+
+        cy.contains('view').click()
+
+        cy.contains('remove').should('not.exist')
       })
 
-      localStorage.setItem('loggedNoteappUser', JSON.stringify(response.body))
-      cy.visit('http://localhost:5173')
-
-      cy.contains('view').click()
-
-      cy.contains('remove').should('not.exist')
 
 
     })
@@ -156,34 +163,43 @@ describe('Blog app', function() {
 
     it('Blogs are ordered by likes', function() {
       cy.contains('new blog').click()
-      cy.get('input:first').type('most likes')
-      cy.get(':nth-child(2) > input').type('firsturl.net')
-      cy.get('input:last').type('auth1')
+      cy.get('input:first').should('be.visible').type('most likes')
+      cy.get(':nth-child(2) > input').should('be.visible').type('auth1')
+      cy.get('input:last').should('be.visible').type('firsturl.net')
       cy.contains('create').click()
 
-      cy.contains('view').click()
+      cy.contains('view').last().click()
       cy.contains('like').click()
       cy.contains('like').click()
+      cy.contains('hide').click()
 
-      cy.contains('new blog').click()
-      cy.get('input:first').type('close second')
-      cy.get(':nth-child(2) > input').type('secondurl.net')
-      cy.get('input:last').type('auth2')
+      cy.wait(2000)
+
+      cy.contains('new blog').should('be.visible').click()
+      cy.get('input:first').should('be.visible').type('close second')
+      cy.get(':nth-child(2) > input').should('be.visible').type('auth2')
+      cy.get('input:last').should('be.visible').type('secondurl.net')
       cy.contains('create').click()
 
-      cy.contains('view').click()
+      cy.contains('view').last().click()
       cy.contains('like').click()
+      cy.contains('hide').click()
 
-      cy.contains('new blog').click()
-      cy.get('input:first').type('dead last')
-      cy.get(':nth-child(2) > input').type('thirdurl.net')
-      cy.get('input:last').type('atuh3')
+      cy.wait(2000)
+
+      cy.contains('new blog').should('be.visible').click()
+      cy.get('input:first').should('be.visible').type('dead last')
+      cy.get(':nth-child(2) > input').should('be.visible').type('auth3')
+      cy.get('input:last').should('be.visible').type('thirdurl.net')
       cy.contains('create').click()
+
+      cy.wait(2000)
 
       cy.get('.blog').eq(0).should('contain', 'most likes')
       cy.get('.blog').eq(1).should('contain', 'close second')
       cy.get('.blog').eq(2).should('contain', 'dead last')
     })
+
 
   })
 
