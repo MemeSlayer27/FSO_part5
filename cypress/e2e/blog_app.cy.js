@@ -113,6 +113,10 @@ describe('Blog app', function() {
     it('A blog can be deleted', function() {
       cy.contains('new blog').click()
 
+      cy.on('window:confirm', (str) => {
+        return true
+      })
+
       cy.get('input:first').type('jtnjtn')
       cy.get(':nth-child(2) > input').type('jokujoku.net')
       cy.get('input:last').type('Matti')
@@ -174,6 +178,7 @@ describe('Blog app', function() {
       cy.contains('hide').click()
 
       cy.wait(2000)
+
 
       cy.contains('new blog').should('be.visible').click()
       cy.get('input:first').should('be.visible').type('close second')

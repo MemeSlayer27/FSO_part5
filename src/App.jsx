@@ -117,15 +117,15 @@ const App = () => {
 
 
   const likePost = (blog) => {
-    const updated = blogs
+    const updated = [...blogs]
 
     const index = updated.indexOf(blog)
 
-    updated[index] = { ...blog, likes: blog + 1 }
+    updated[index] = { ...blog, likes: blog.likes + 1 }
 
     setBlogs(updated)
-
   }
+
 
 
   if (user === null) {

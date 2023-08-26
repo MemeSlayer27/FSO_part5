@@ -20,13 +20,15 @@ const Blog = ({ blog, deletePost, likePost = null, showRemove = false }) => {
     try {
       await blogService.likeBlog(blog)
       setLikes(likes + 1)
+
+      if (likePost) {
+        likePost()
+      }
     } catch (e) {
       console.log(e)
     }
 
-    if (likePost) {
-      likePost()
-    }
+
   }
 
 
