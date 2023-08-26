@@ -15,15 +15,15 @@ const Blog = ({ blog, deletePost, likePost = null, showRemove = false }) => {
   const [likes, setLikes] = useState(blog.likes)
 
   const likeHandler = async () => {
-
+    if (likePost) {
+      likePost()
+    }
 
     try {
       await blogService.likeBlog(blog)
       setLikes(likes + 1)
 
-      if (likePost) {
-        likePost()
-      }
+
     } catch (e) {
       console.log(e)
     }
